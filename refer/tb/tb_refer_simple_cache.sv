@@ -1,3 +1,17 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Author:        Computer Organization and Design 5.12
+// Editor:        ljgibbs / lf_gibbs@163.com
+// Edit Date: 2020/08/07 
+// Design Name: basic_cache_core
+// Module Name: tb_refer_simple_cache
+// Description:
+//      书中代码的 testbench
+// Dependencies: 
+//      
+// Revision:
+// Revision 0.01 - File Created
+//////////////////////////////////////////////////////////////////////////////////
+
 //simulated memory
 import cache_def::*; 
 
@@ -44,7 +58,7 @@ module sim_mem(input bit clk,
 endmodule 
 
 
-module test_main;
+module tb_simple_cache;
         bit clk;       
         initial forever #2 clk = ~clk; 
 
