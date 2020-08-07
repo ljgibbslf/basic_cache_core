@@ -12,6 +12,7 @@
 // Revision 0.01 - File Created
 //////////////////////////////////////////////////////////////////////////////////
 /*cache: tag memory, single port, 1024 blocks*/
+import cache_def::*; 
 module dm_cache_fsm(
     input  bit clk, 
     input  bit rst,         
@@ -56,7 +57,7 @@ always_comb begin
     
     /*read tag by default*/    
     tag_req.we = '0;                 /*direct map index for tag*/     
-    tag_req.index = cpu_req.[13:4];    
+    tag_req.index = cpu_req.addr[13:4];    
     
     /*read current cache line by default*/    
     data_req.we  =  '0;    

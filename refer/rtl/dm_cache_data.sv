@@ -12,6 +12,7 @@
 // Revision:
 // Revision 0.01 - File Created
 //////////////////////////////////////////////////////////////////////////////////
+import cache_def::*; 
 module dm_cache_data(
     input  bit clk,     
     input  cache_req_type  data_req,//data request/command, e.g. RW, valid    
@@ -23,10 +24,10 @@ timeunit 1ns; timeprecision 1ps;
     
 cache_data_type data_mem[0:1023];  
     
-initial  begin    
-    for (int i=0; i<1024; i++)           
-        data_mem[i] = '0;  
-end  
+// initial  begin    
+//     for (int i=0; i<1024; i++)           
+//         data_mem[i] = '0;  
+// end  
 
 assign  data_read  =  data_mem[data_req.index];  
 

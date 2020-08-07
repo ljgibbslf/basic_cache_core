@@ -13,6 +13,7 @@
 // Revision 0.01 - File Created
 //////////////////////////////////////////////////////////////////////////////////
 /*cache: tag memory, single port, 1024 blocks*/
+import cache_def::*; 
 module dm_cache_tag(
     input  bit clk, //write clock    
     input  cache_req_type tag_req, //tag request/command, e.g. RW, valid    
@@ -24,10 +25,10 @@ timeunit 1ns; timeprecision 1ps;
 
 cache_tag_type tag_mem[0:1023];  
 
-initial  begin      
-    for (int i=0; i<1024; i++)       
-        tag_mem[i] = '0;  
-end  
+// initial  begin      
+//     for (int i=0; i<1024; i++)       
+//         tag_mem[i] = '0;  
+// end  
 
 assign tag_read = tag_mem[tag_req.index]; 
 

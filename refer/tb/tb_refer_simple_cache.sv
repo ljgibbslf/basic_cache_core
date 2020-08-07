@@ -33,7 +33,7 @@ module sim_mem(input bit clk,
         rand_cl rand_data = new();
 
         always @(posedge clk) begin
-              data.valid = '0;
+              data.ready = '0;
 
               if (!mem.exists(req.addr)) begin        //random initialize DRAM data on-demand 
                       rand_data.randomize();
@@ -52,7 +52,7 @@ module sim_mem(input bit clk,
                 end
 
                 $display("%t: [Memory] request finished", $time);
-                data.valid = '1;                                
+                data.ready = '1;                                
               end
         end 
 endmodule 
@@ -64,8 +64,8 @@ module tb_simple_cache;
 
         mem_req_type    mem_req;        
         mem_data_type   mem_data;
-        iu_req_type     iu_req;
-        iu_result_type  iu_res;
+        cpu_req_type     cpu_req;
+        cpu_result_type  cpu_res;
        
         bit     rst;
         
@@ -81,7 +81,7 @@ module tb_simple_cache;
                ##10;
                rst = '0;
 
-               iu_req = '{default:0};
+               cpu_req = '{default:0};
                
                //note that: The CPU needs to reset all cache tags in a real ASIC implementation
                //In this testbench, all tags are automatically initialized to 0 because the use of the systemverilog bit data type
@@ -89,64 +89,64 @@ module tb_simple_cache;
                //read clean miss (allocate)                
                $timeformat(-9, 3, "ns", 10);
 
-               iu_req.rw = '0;
-               iu_req.addr[13:4] = 2;           //index 2
-               iu_req.addr[31:14] = 'h1234;
-               iu_req.valid = '1;
-               $display("%t: [CPU] read addr=%x", $time, iu_req.addr);
-               wait(iu_res.valid == '1);
-               $display("%t: [CPU] get data=%x", $time, iu_res.data);
-               iu_req.valid = '0;
+               cpu_req.rw = '0;
+               cpu_req.addr[13:4] = 2;           //index 2
+               cpu_req.addr[31:14] = 'h1234;
+               cpu_req.valid = '1;
+               $display("%t: [CPU] read addr=%x", $time, cpu_req.addr);
+               wait(cpu_res.ready == '1);
+               $display("%t: [CPU] get data=%x", $time, cpu_res.data);
+               cpu_req.valid = '0;
                ##5;
 
                //read hit clean line
-               iu_req.addr[3:0] = 8;
-               iu_req.valid = '1;
-               $display("%t: [CPU] read addr=%x", $time, iu_req.addr); 
-               wait(iu_res.valid == '1);
-               $display("%t: [CPU] get data=%x", $time, iu_res.data); 
-               iu_req.valid = '0;
+               cpu_req.addr[3:0] = 8;
+               cpu_req.valid = '1;
+               $display("%t: [CPU] read addr=%x", $time, cpu_req.addr); 
+               wait(cpu_res.ready == '1);
+               $display("%t: [CPU] get data=%x", $time, cpu_res.data); 
+               cpu_req.valid = '0;
                ##5;
  
                //write hit clean line (cache line is dirty afterwards)
-               iu_req.rw = '1;
-               iu_req.addr[3:0] = 'ha;
-               iu_req.data = 32'hdeadbeef;
-               iu_req.valid = '1;
-               $display("%t: [CPU] write addr=%x with data=%x", $time, iu_req.addr, iu_req.data);
-               wait(iu_res.valid == '1);
+               cpu_req.rw = '1;
+               cpu_req.addr[3:0] = 'ha;
+               cpu_req.data = 32'hdeadbeef;
+               cpu_req.valid = '1;
+               $display("%t: [CPU] write addr=%x with data=%x", $time, cpu_req.addr, cpu_req.data);
+               wait(cpu_res.ready == '1);
                $display("%t: [CPU] write done", $time); 
-               iu_req.valid = '0;
+               cpu_req.valid = '0;
                ##5;
  
                //write conflict miss (write back then allocate, cache line dirty)
-               iu_req.addr[31:14] = 'h4321;               
-               iu_req.data = 32'hcafebeef;
-               iu_req.valid = '1;
-               $display("%t: [CPU] write addr=%x with data=%x", $time, iu_req.addr, iu_req.data); 
-               wait(iu_res.valid == '1);
+               cpu_req.addr[31:14] = 'h4321;               
+               cpu_req.data = 32'hcafebeef;
+               cpu_req.valid = '1;
+               $display("%t: [CPU] write addr=%x with data=%x", $time, cpu_req.addr, cpu_req.data); 
+               wait(cpu_res.ready == '1);
                $display("%t: [CPU] write done", $time);
-               iu_req.valid = '0;
+               cpu_req.valid = '0;
                ##5;
  
                //read hit dirty line
-               iu_req.rw = '0;
-               iu_req.addr[3:0] = '0;
-               iu_req.valid = '1; 
-               $display("%t: [CPU] read addr=%x", $time, iu_req.addr);
-               wait(iu_res.valid == '1);
-               $display("%t: [CPU] get data=%x", $time, iu_res.data); 
-               iu_req.valid = '0;
+               cpu_req.rw = '0;
+               cpu_req.addr[3:0] = '0;
+               cpu_req.valid = '1; 
+               $display("%t: [CPU] read addr=%x", $time, cpu_req.addr);
+               wait(cpu_res.ready == '1);
+               $display("%t: [CPU] get data=%x", $time, cpu_res.data); 
+               cpu_req.valid = '0;
                ##5;
  
                //read conflict miss dirty line (write back then allocate, cache line is clean)  
-               iu_req.addr[31:14] = 'h5678;
-               iu_req.addr[3:0] = 4;
-               iu_req.valid = '1;
-               $display("%t: [CPU] read addr=%x", $time, iu_req.addr); 
-               wait(iu_res.valid == '1);
-               $display("%t: [CPU] get data=%x", $time, iu_res.data); 
-               iu_req.valid = '0;
+               cpu_req.addr[31:14] = 'h5678;
+               cpu_req.addr[3:0] = 4;
+               cpu_req.valid = '1;
+               $display("%t: [CPU] read addr=%x", $time, cpu_req.addr); 
+               wait(cpu_res.ready == '1);
+               $display("%t: [CPU] get data=%x", $time, cpu_res.data); 
+               cpu_req.valid = '0;
                ##5; 
 
                $finish();
