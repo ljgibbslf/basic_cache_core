@@ -2,7 +2,7 @@
 // Author:        Computer Organization and Design 5.12
 // Editor:        ljgibbs / lf_gibbs@163.com
 // Edit Date: 2020/08/06 
-// Design Name: basic_cache_controller
+// Design Name: basic_cache_core
 // Module Name: dm_cache_data
 // Description:
 //      cache 数据存储，单端口，1024 个块，每个块中有一个 cache line
